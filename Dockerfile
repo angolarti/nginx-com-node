@@ -1,6 +1,6 @@
 FROM node:18.12.0-alpine
 
-WORKDIR /home/node
+WORKDIR /usr/src/app
 
 RUN apk update && apk add --no-cache wget
 ENV NPM_CONFIG_PREFIX=/home/node/.npm-global
@@ -12,8 +12,9 @@ RUN wget https://github.com/jwilder/dockerize/releases/download/$DOCKERIZE_VERSI
 
 COPY package.json .
 COPY package-lock.json .
-RUN npm i
-EXPOSE 3000
+RUN npm i && npm cache clean --force
+RUN mv node_modules /node_modules
 
-ENTRYPOINT [ "npm" ]
-CMD [ "run", "dev" ]
+VOLUME [ "/node_modules" ]
+
+EXPOSE 3000
